@@ -1,0 +1,3 @@
+[submodule "external/wallhavenapi"]
+	path = external/wallhavenapi
+	url = https://github.com/kshku/wallhavenapi
