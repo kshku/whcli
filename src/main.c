@@ -24,12 +24,10 @@ int main(int argc, const char *argv[]) {
     SearchParameters params = {.ratio_count = 1,
                                .ratios = (Ratio[]){{.width = 16, .height = 9}}};
 
-    srand(time(NULL));
-    for (int i = 0; i < 6; ++i) params.seed[i] = seed_chars[rand() % 62];
-
     const char *type = NULL;
     const char *dir = NULL;
     const char *apikey = NULL;
+    int set_seed;
 
     struct argparse_option options[] = {
         OPT_HELP(),
@@ -48,6 +46,8 @@ int main(int argc, const char *argv[]) {
                    NULL, 0, 0),
         OPT_STRING('t', "type", &type,
                    "Type of image (Should be png or jpg or jpeg)", NULL, 0, 0),
+        OPT_STRING('l', "like", &params.q.like,
+                   "Wallpapers like (give wallpaper id)", NULL, 0, 0),
 
         OPT_GROUP("Other options:"),
         OPT_STRING('d', "dir", &dir, "Directory to download", NULL, 0, 0),
@@ -67,6 +67,7 @@ int main(int argc, const char *argv[]) {
         OPT_BIT(0, "category-all", &params.categories,
                 "general | anime | people", NULL, CATEGORY_ALL, 0),
         OPT_INTEGER('p', "page", &params.page, "Page number", NULL, 0, 0),
+        OPT_BOOLEAN('s', "seed", &set_seed, "Use seed", NULL, 0, 0),
 
         OPT_END()};
 
@@ -118,6 +119,11 @@ int main(int argc, const char *argv[]) {
         printf("Failed to initialize whapi\n");
         whapi_shutdown();
         return -1;
+    }
+
+    if (set_seed) {
+        srand(time(NULL));
+        for (int i = 0; i < 6; ++i) params.seed[i] = seed_chars[rand() % 62];
     }
 
     whapi_set_response_code_handler(handler);
